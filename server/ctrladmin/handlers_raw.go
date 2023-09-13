@@ -8,8 +8,11 @@ import (
 
 func (c *Controller) ServeLoginDo(w http.ResponseWriter, r *http.Request) {
 	session := r.Context().Value(CtxSession).(*sessions.Session)
-	username := r.FormValue("username")
-	password := r.FormValue("password")
+	username, password, ok := r.BasicAuth()
+	if !ok {
+		username = r.FormValue("username")
+		password = r.FormValue("password")
+	}
 	if username == "" || password == "" {
 		sessAddFlashW(session, []string{"please provide username and password"})
 		sessLogSave(session, w, r)
